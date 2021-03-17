@@ -1,7 +1,8 @@
 'use strict';
 
 require('dotenv').config();
-const { prefix, token } = require('./config.json');
+const fs = require('fs');
+const { prefix, token, suggestions } = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
@@ -15,24 +16,26 @@ client.login(token);
 
 
 function onMessage(message) {
-	if (!message.content.startsWith(prefix)) {
+	if (!message.content.startsWith(prefix) || message.author.bot) {
 		return;
 	}
 
-	const words = message.content.substring(prefix.length).split(' ');
-
-	if (words.length == 0) {
-		return;
-	}
-
-	const command = words[0];
-	const args = words.slice(1);
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const command = args.shift().toLowerCase();
 
 	switch(command) {
 	case 'ping':
 		message.reply(args.join(' '));
 		break;
+	case 'suggest':
+		fs.appendFile(suggestions, `\n${args.join(' ')}`, err => {
+			if (err) console.log(err);
+		});
+		message.reply('your suggestion was noted');
+		break;
 	default:
-		message.reply(`Unrecognized command: ${command}`);
+		message.reply(`Unrecognized command: ${command}, but I am a work in progress. suggest something with !suggest <suggestion>`);
+		break;
 	}
 }
+
