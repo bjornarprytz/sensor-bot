@@ -2,9 +2,21 @@
 
 require('dotenv').config();
 const fs = require('fs');
-const { prefix, token, suggestions } = require('./config.json');
+const { prefix, token } = require('./config.json');
 const Discord = require('discord.js');
+
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFolders = fs.readdirSync('./commands');
+
+for (const folder of commandFolders) {
+	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const command = require(`./commands/${folder}/${file}`);
+		client.commands.set(command.name, command);
+	}
+}
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -21,21 +33,27 @@ function onMessage(message) {
 	}
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
-	const command = args.shift().toLowerCase();
+	const commandName = args.shift().toLowerCase();
 
-	switch(command) {
-	case 'ping':
-		message.reply(args.join(' '));
-		break;
-	case 'suggest':
-		fs.appendFile(suggestions, `\n${args.join(' ')}`, err => {
-			if (err) console.log(err);
-		});
-		message.reply('your suggestion was noted');
-		break;
-	default:
-		message.reply(`Unrecognized command: ${command}, but I am a work in progress. suggest something with !suggest <suggestion>`);
-		break;
+	if (!client.commands.has(commandName)) return;
+
+	const command = client.commands.get(commandName);
+
+	if (command.args && !args.length) {
+		let reply = `You didn't provide any arguments, ${message.author}!`;
+
+		if (command.usage) {
+			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+		}
+
+		return message.channel.send(reply);
+	}
+
+	try {
+		command.execute(message, args);
+	}
+	catch (error) {
+		console.error(error);
+		message.repoly('there was an error trying to execute that command!');
 	}
 }
-
