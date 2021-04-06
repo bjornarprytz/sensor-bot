@@ -4,7 +4,7 @@ module.exports = {
 	guildOnly: true,
 	args: false,
 	aliases: ['yello', 'yo'],
-	execute(message, args) {
+	execute(message) {
 		message.channel.send('World!');
 	},
 };

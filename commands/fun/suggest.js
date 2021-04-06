@@ -4,7 +4,7 @@ module.exports = {
 	args: true,
 	usage: '<suggestion>',
 	cooldown: 30,
-	execute(message, args) {
+	execute(message) {
 		message.channel.send('World!');
 	},
 };
