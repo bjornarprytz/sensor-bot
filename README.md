@@ -19,6 +19,7 @@ Add file in `/commands/<category>/<command_name.js>` [example](commands/fun/hell
 - aliases: string[] (alternative names)
 - description: string (user friendly explanation)
 - args: bool (does the command have argments?)
+- channels: string[] (if empty, command works on all channels)
 - cooldown: int (seconds, per user, per alias; **Default: 3**)
 - guildOnly: bool (true => command only works in server channels (not DMs))
 - permissions: [discord permissions](https://discordjs.guide/command-handling/adding-features.html#command-permissions)
