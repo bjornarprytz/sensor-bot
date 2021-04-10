@@ -16,6 +16,10 @@ module.exports = {
 
 		if (!command) return;
 
+		if (command.channels && !command.channels.includes(message.channel.name)) {
+			return;
+		}
+
 		if (command.permissions) {
 			const authorPermissions = message.channel.permissionsFor(message.author);
 			if(!authorPermissions || authorPermissions.has(command.permissions)) {
