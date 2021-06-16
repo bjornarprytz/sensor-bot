@@ -3,11 +3,11 @@ const needle = require('needle');
 
 module.exports = {
 	name: 'read',
-	description: '**TODO** Read sensor data.',
+	description: '**TODO** Read sensor data for ec sensor',
 	guildOnly: true,
 	channels: ['operations'],
 	args: true,
-	usage: 'hum|ec|ph|all',
+	usage: 'hum|temp|ec|ph|all',
 	execute(message, args) {
 		const sensorToRead = args[0];
 
@@ -15,7 +15,7 @@ module.exports = {
 			if (!error && response.statusCode === 200) {
 				message.channel.send(`${sensorToRead}: ${response.body}`);
 			} else {
-				message.channel.send(`Error:${error}`);
+				message.channel.send(error);
 				console.error(error);
 			}
 		});
